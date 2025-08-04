@@ -28,6 +28,11 @@ github_username:  twofiveoneten
 
 timezone: Asia/Shanghai
 
+# 导航页面配置
+header_pages:
+  - about.markdown
+  - categories.html
+
 # YAT Theme 配置
 yat:
   date_format: "%Y年%m月%d日"
