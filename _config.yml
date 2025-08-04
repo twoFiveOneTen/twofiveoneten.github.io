@@ -52,3 +52,16 @@ plugins:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+yat:
+  # 首页横幅
+  banner:
+    title: "kk的笔记本"
+    subtitle: "随手记 | AI生成"
+    background: "/assets/img/bg.png"
+    
+  # 颜色主题
+  theme_color: "#1890ff"
+  
+  # 导航菜单
+  header_pages:
+    - about.md
