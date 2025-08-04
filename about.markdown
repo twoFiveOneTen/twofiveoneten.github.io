@@ -32,6 +32,5 @@ permalink: /about/
 
 - 📧 邮箱：[zhang.kangkang#outlook.com](mailto:zhang.kangkang@outlook.com)
 - 🐙 链接：[https://note.zkk.me]
-- 💬 在文章下方留言讨论
 
 感谢您的访问，希望我们的内容对您有所帮助！
