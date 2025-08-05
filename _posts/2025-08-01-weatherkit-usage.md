@@ -4,7 +4,6 @@ title:  "WeatherKit 的使用"
 date:   2025-08-01 00:39:26 +0800
 categories: iOS
 ---
-
 ## iOS WeatherKit 全面开发指南
 
 WeatherKit 是苹果在 iOS 16 中引入的天气数据框架，提供准确、可靠的天气信息服务。它取代了之前的 Dark Sky API，为开发者提供了官方的天气数据解决方案。
