@@ -7,7 +7,7 @@ title: "zkk's blog"
 heading: "欢迎来到我的笔记本"
 subheading: "分享点滴学习，记录成长足迹"
 banner:
-  image: "/assets/img/bg.png"
+  image: "/img/global/bg.png"
   opacity: 0.8
   background: "#1a1a2e"
   height: "100vh"

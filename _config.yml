@@ -39,7 +39,7 @@ yat:
 
 # 首页 Banner 配置
 banner:
-  image: "/assets/img/bg.png"
+  image: "/img/global/bg.png"
   opacity: 0.8
   background: "#1a1a2e"
   height: "100vh"
