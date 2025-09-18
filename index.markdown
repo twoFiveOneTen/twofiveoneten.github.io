@@ -10,7 +10,7 @@ banner:
   image: "/img/global/bg.png"
   opacity: 0.8
   background: "#1a1a2e"
-  height: "100vh"
+  height: "50vh"
   min_height: "50vh"
   heading_style: "font-size: 4.25em; font-weight: bold; color: #ffffff; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);"
   subheading_style: "color: #ffd700; font-size: 1.5em; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);"
