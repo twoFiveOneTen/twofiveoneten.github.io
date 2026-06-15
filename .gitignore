@@ -3,7 +3,6 @@ node_modules/
 
 # Hexo generated site
 public/
-db.json
 .DS_Store
 
 # Jekyll residue (kept for safety in case any weren't removed)

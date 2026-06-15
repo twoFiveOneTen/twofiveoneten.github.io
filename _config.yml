@@ -31,12 +31,6 @@ marked:
   gfm: true
   breaks: false
 
-# Pagination (used by fluid theme's index-generator)
-index_generator:
-  path: ''
-  per_page: 10
-  order_by: -date
-
 # Theme
 theme: fluid
 
