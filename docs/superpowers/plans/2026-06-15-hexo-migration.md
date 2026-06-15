@@ -1,0 +1,724 @@
+# Jekyll → Hexo Migration Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Migrate the GitHub Pages blog from Jekyll to Hexo (Fluid theme), preserving all post permalinks, the custom domain, image references, and the GitHub Actions deployment pipeline.
+
+**Architecture:** One-time in-place migration on a `feature/hexo-migration` branch that merges back to `gh-pages`. Jekyll files are replaced by Hexo files; 71 posts and 166MB of images are moved into Hexo's `source/` tree. Posts keep their explicit frontmatter `permalink` field, so all `/0xNNNN.html` URLs remain unchanged. The GitHub Actions workflow switches from Ruby to Node 20.
+
+**Tech Stack:** Hexo 7.x, hexo-theme-fluid 1.9.x, hexo-generator-search, Node.js 20, GitHub Actions.
+
+**Spec:** `docs/superpowers/specs/2026-06-15-hexo-migration-design.md`
+
+---
+
+## File Map
+
+Created:
+- `package.json` — Hexo dependencies + npm scripts
+- `_config.yml` — Hexo main configuration
+- `_config.fluid.yml` — Fluid theme configuration
+- `source/_posts/` — 71 migrated markdown files
+- `source/about/index.md` — About page (from `about.markdown`)
+- `source/categories/index.md` — Categories page (from `categories.html`)
+- `source/404.html` — 404 page
+- `source/img/` — 166MB of image assets (moved from `img/`)
+- `source/CNAME` — Custom domain file
+- `source/favicon.ico` — Favicon
+- `.github/workflows/pages.yml` — Node-based deploy workflow
+
+Modified:
+- `.gitignore` — Add `node_modules/`, `public/`, `.DS_Store`
+
+Deleted:
+- `Gemfile`, `Gemfile.lock`
+- `_includes/custom-head.html`
+- `assets/css/custom.css`
+- `_site/`, `.jekyll-cache/`
+- `.venv/`
+- `typechoToJekyll.swift`
+- `.github/workflows/jekyll.yml`
+- `index.markdown` (replaced by Hexo-generated index + Fluid home layout)
+
+---
+
+## Task 1: Create work branch and verify Node toolchain
+
+**Files:** None (git operation only)
+
+- [ ] **Step 1: Create and switch to work branch**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+git checkout -b feature/hexo-migration
+```
+
+Expected: Switched to a new branch 'feature/hexo-migration'.
+
+- [ ] **Step 2: Verify Node and npm are available**
+
+```bash
+node --version && npm --version
+```
+
+Expected: Node ≥ 18 (e.g., `v20.x.x`), npm ≥ 9 (e.g., `10.x.x`).
+
+If Node is missing, install via `brew install node@20` (macOS) or use `nvm install 20 && nvm use 20`.
+
+- [ ] **Step 3: Commit branch base**
+
+```bash
+git commit --allow-empty -m "chore: start hexo migration branch"
+```
+
+---
+
+## Task 2: Add Hexo config files
+
+**Files:**
+- Create: `package.json`
+- Create: `_config.yml`
+- Create: `_config.fluid.yml`
+
+- [ ] **Step 1: Write `package.json`**
+
+```json
+{
+  "name": "twofiveoneten-blog",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "hexo generate",
+    "serve": "hexo serve",
+    "clean": "hexo clean"
+  },
+  "dependencies": {
+    "hexo": "^7.3.0",
+    "hexo-renderer-marked": "^6.0.0",
+    "hexo-theme-fluid": "^1.9.4",
+    "hexo-generator-feed": "^3.0.0",
+    "hexo-generator-search": "^0.2.1"
+  }
+}
+```
+
+Write to `/Users/zhangkangkang/project/twofiveoneten.github.io/package.json`.
+
+- [ ] **Step 2: Write Hexo `_config.yml`**
+
+```yaml
+# Site
+title: "zkk's blog"
+subtitle: '分享点滴学习，记录成长足迹'
+description: '我的个人在线笔记本'
+author: zkk
+language: zh-CN
+timezone: Asia/Shanghai
+
+# URL
+url: https://note.zkk.me
+root: /
+permalink: :year/:month/:day/:title/
+permalink_defaults:
+
+# Directory
+source_dir: source
+public_dir: public
+tag_dir: tags
+archive_dir: archives
+category_dir: categories
+
+# Writing
+new_post_name: :title.md
+default_layout: post
+titlecase: false
+external_link:
+  enable: true
+  field: site
+  nofollow: true
+
+# Markdown
+marked:
+  gfm: true
+  breaks: false
+
+# Theme
+theme: fluid
+
+# Feed (replaces jekyll-feed)
+feed:
+  type: atom
+  path: atom.xml
+  limit: 20
+
+# Search (powers Fluid local search)
+search:
+  path: local-search.xml
+  field: post
+  format: html
+  limit: 10000
+
+# Deployment (informational; actual deploy via GitHub Actions)
+deploy:
+  type: ''
+```
+
+Write to `/Users/zhangkangkang/project/twofiveoneten.github.io/_config.yml`.
+
+- [ ] **Step 3: Write Fluid theme `_config.fluid.yml`**
+
+```yaml
+# Fluid theme configuration
+# Doc: https://github.com/fluid-dev/hexo-theme-fluid
+
+# Banner (home page)
+banner:
+  home:
+    img: /img/global/bg.png
+    height: 50vh
+    min_height: 50vh
+    heading_style: 'font-size: 2.5em; font-weight: bold; color: #ffffff; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);'
+    subheading_style: 'color: #ffd700; font-size: 1.5em; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);'
+
+# Local search
+search:
+  enable: true
+
+# Code highlight
+highlight:
+  enable: true
+  line_number: false
+  copy_button: true
+
+# Article
+article:
+  word_count:
+    enable: true
+  toc:
+    enable: true
+
+# Color
+color:
+  main_color: '#1a1a2e'
+
+# Footer
+footer:
+  enable: true
+```
+
+Write to `/Users/zhangkangkang/project/twofiveoneten.github.io/_config.fluid.yml`.
+
+- [ ] **Step 4: Install dependencies**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+npm install
+```
+
+Expected: Installs hexo, fluid theme, search plugin, and peer deps. May print warnings about deprecated transitive deps — those are fine. `node_modules/` directory is created. **No errors**.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add package.json _config.yml _config.fluid.yml package-lock.json
+git commit -m "feat(hexo): add hexo + fluid theme configuration"
+```
+
+---
+
+## Task 3: Migrate posts (71 markdown files)
+
+**Files:**
+- Create: `source/_posts/*.md` (71 files)
+- Delete: `_posts/` directory
+
+- [ ] **Step 1: Create `source/_posts/` and move posts**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+mkdir -p source/_posts
+mv _posts/*.md source/_posts/
+ls source/_posts/*.md | wc -l
+```
+
+Expected last line: `71`.
+
+- [ ] **Step 2: Replace `<!--more-->` with `<!-- more -->`**
+
+Hexo expects a space between the markers; Jekyll didn't.
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+find source/_posts -name '*.md' -exec sed -i '' 's/<!--more-->/<!-- more -->/g' {} +
+grep -l '<!--more-->' source/_posts/*.md | wc -l
+```
+
+Expected last line: `0` (no remaining occurrences without space).
+
+- [ ] **Step 3: Remove now-empty `_posts/` directory**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+rmdir _posts
+```
+
+- [ ] **Step 4: Spot-check one post**
+
+```bash
+head -10 source/_posts/2018-12-03-0x0000.md
+```
+
+Expected output (first 10 lines):
+
+```
+---
+layout: post
+title: "搭建WordPress博客"
+date: 2018-12-03 03:21:00
+categories: ["Linux", "PHP"]
+tags: []
+permalink: /0x0000.html
+---
+用WordPress搭建一个个人博客，在博客里写一写，记录生活的点点滴滴。适合于纯小白的教程，使用lnmp.org的lnmp一键安装脚本搭建。<!-- more -->
+## 您需要
+```
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add source/_posts/
+git rm -r _posts/ 2>/dev/null || true
+git commit -m "feat(hexo): migrate 71 posts to source/_posts"
+```
+
+---
+
+## Task 4: Migrate pages (about, categories, 404, index)
+
+**Files:**
+- Create: `source/about/index.md` (from `about.markdown`)
+- Create: `source/categories/index.md` (from `categories.html`)
+- Create: `source/404.html` (from `404.html`)
+- Create: `source/index.md` (homepage content)
+- Delete: `about.markdown`, `categories.html`, `404.html`, `index.markdown`
+
+- [ ] **Step 1: Migrate about page**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+mkdir -p source/about
+git mv about.markdown source/about/index.md
+head -20 source/about/index.md
+```
+
+Verify the frontmatter and content moved intact (lines 1-15 contain the `---` frontmatter block).
+
+- [ ] **Step 2: Migrate categories page**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+mkdir -p source/categories
+git mv categories.html source/categories/index.md
+head -10 source/categories/index.md
+```
+
+Verify the frontmatter moved intact.
+
+- [ ] **Step 3: Migrate 404 page**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+git mv 404.html source/404.html
+head -5 source/404.html
+```
+
+Expected:
+
+```
+---
+permalink: /404.html
+layout: page
+---
+```
+
+- [ ] **Step 4: Skip homepage file (`index.markdown`)**
+
+The Jekyll homepage had a `layout: home` directive used by the yat theme. In Fluid, the home page is rendered by the theme's `index.swig` template — we don't need a separate index file. The banner headline is configured via `_config.fluid.yml` (Task 2 already set `banner.home`). Delete the Jekyll file:
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+git rm index.markdown
+```
+
+- [ ] **Step 5: Commit**
+
+```bash
+git commit -m "feat(hexo): migrate about, categories, 404 pages; drop jekyll home"
+```
+
+---
+
+## Task 5: Migrate static assets (img, CNAME, favicon)
+
+**Files:**
+- Create: `source/img/` (moved from `img/`)
+- Create: `source/CNAME`
+- Create: `source/favicon.ico`
+
+- [ ] **Step 1: Move `img/` directory**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+git mv img source/img
+du -sh source/img
+```
+
+Expected: ≈ 166M.
+
+- [ ] **Step 2: Move `CNAME` and `favicon.ico`**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+git mv CNAME source/CNAME
+git mv favicon.ico source/favicon.ico
+cat source/CNAME
+```
+
+Expected: `note.zkk.me`
+
+- [ ] **Step 3: Verify image reference paths in posts still resolve**
+
+```bash
+grep -h '/img/' source/_posts/*.md | head -3
+```
+
+Expected: a few sample lines like `![](/img/0000/xxx.png)` or similar — these absolute paths resolve against `source/img/` and will become `/img/...` in the public site, identical to Jekyll's output.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git commit -m "feat(hexo): migrate img, CNAME, favicon to source/"
+```
+
+---
+
+## Task 6: Clean up Jekyll residue
+
+**Files:**
+- Delete: `Gemfile`, `Gemfile.lock`, `_includes/`, `assets/`, `.jekyll-cache/`, `_site/`, `.venv/`, `typechoToJekyll.swift`
+
+- [ ] **Step 1: Remove Jekyll-specific files and directories**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+rm -f Gemfile Gemfile.lock
+rm -rf _includes assets .jekyll-cache _site .venv typechoToJekyll.swift
+ls
+```
+
+Expected (output of `ls`, no Jekyll artifacts):
+```
+docs
+node_modules
+package-lock.json
+package.json
+public          # may be empty/absent until first generate
+source
+_config.fluid.yml
+_config.yml
+.gitignore
+.github
+```
+
+- [ ] **Step 2: Commit**
+
+```bash
+git rm -rf Gemfile Gemfile.lock _includes assets .jekyll-cache _site .venv typechoToJekyll.swift
+git commit -m "chore: remove jekyll-specific files"
+```
+
+---
+
+## Task 7: Update `.gitignore`
+
+**Files:**
+- Modify: `.gitignore`
+
+- [ ] **Step 1: Rewrite `.gitignore`**
+
+Full new contents:
+
+```
+# Dependencies
+node_modules/
+
+# Hexo generated site
+public/
+.DS_Store
+
+# Jekyll residue (kept for safety in case any weren't removed)
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+vendor/
+```
+
+Write to `/Users/zhangkangkang/project/twofiveoneten.github.io/.gitignore`.
+
+- [ ] **Step 2: Verify node_modules and public are not tracked**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+git check-ignore -v node_modules public
+```
+
+Expected output (one line each):
+```
+.gitignore:3:node_modules/	node_modules
+.gitignore:6:public/	public
+```
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add .gitignore
+git commit -m "chore: update .gitignore for hexo"
+```
+
+---
+
+## Task 8: Replace Jekyll workflow with Hexo workflow
+
+**Files:**
+- Delete: `.github/workflows/jekyll.yml`
+- Create: `.github/workflows/pages.yml`
+
+- [ ] **Step 1: Delete old Jekyll workflow**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+rm .github/workflows/jekyll.yml
+```
+
+- [ ] **Step 2: Write new Hexo workflow**
+
+Full contents of `.github/workflows/pages.yml`:
+
+```yaml
+name: Deploy Hexo site to Pages
+
+on:
+  push:
+    branches: [gh-pages]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build with Hexo
+        run: npx hexo generate
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+Write to `/Users/zhangkangkang/project/twofiveoneten.github.io/.github/workflows/pages.yml`.
+
+- [ ] **Step 3: Validate YAML syntax**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+wc -l .github/workflows/pages.yml
+```
+
+Expected: file exists and has roughly 50 lines (sanity check it's not empty or corrupted). Workflow syntax is validated by GitHub Actions when the workflow runs; for a local sanity check, the line count + structural eyeball check above is sufficient.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add .github/workflows/pages.yml
+git rm .github/workflows/jekyll.yml
+git commit -m "ci(hexo): replace jekyll workflow with hexo/node workflow"
+```
+
+---
+
+## Task 9: Local verification
+
+**Files:** None (run-only)
+
+- [ ] **Step 1: Clean any stale build artifacts**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+npx hexo clean
+```
+
+Expected: `INFO  Deleted database.` and `INFO  Deleted public/`.
+
+- [ ] **Step 2: Generate the site**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+npx hexo generate
+```
+
+Expected: no errors. Final lines should show something like `INFO  71 files generated in X.Xs`.
+
+- [ ] **Step 3: Verify post count in generated output**
+
+```bash
+ls public/2018 public/2019 public/2020 public/2021 public/2022 2>/dev/null
+find public -name '*.html' -path '*/2*' | grep -v 'tags\|categories\|archives\|index\|about\|404' | wc -l
+```
+
+Expected last line: ≈ 71 (exact count may include a few extra top-level pages, but should be ≥ 71).
+
+- [ ] **Step 4: Spot-check permalinks**
+
+```bash
+ls public/0x0000.html public/0x0045.html public/about public/categories public/404.html 2>&1
+```
+
+Expected: all five paths exist.
+
+- [ ] **Step 5: Spot-check image reference**
+
+```bash
+grep -l '/img/global/bg.png' public/index.html public/2018/12/03/0x0000.html 2>/dev/null | head -5
+```
+
+Expected: at least one match (banner image referenced on homepage).
+
+- [ ] **Step 6: Run hexo server briefly to validate rendering**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+npx hexo server &
+HEXO_PID=$!
+sleep 5
+curl -sI http://localhost:4000/ | head -1
+curl -sI http://localhost:4000/0x0000.html | head -1
+curl -sI http://localhost:4000/about/ | head -1
+curl -sI http://localhost:4000/categories/ | head -1
+curl -sI http://localhost:4000/404.html | head -1
+kill $HEXO_PID
+```
+
+Expected: 5 lines starting with `HTTP/1.1 200 OK`.
+
+- [ ] **Step 7: Commit any generated artifacts that need tracking (only if absent in `.gitignore`)**
+
+If `public/` was tracked accidentally:
+
+```bash
+git status --short public/
+```
+
+Expected: empty (public/ is in `.gitignore`).
+
+---
+
+## Task 10: Merge to gh-pages and deploy
+
+**Files:** None (git + GitHub only)
+
+- [ ] **Step 1: Switch to `gh-pages` and merge**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+git checkout gh-pages
+git merge feature/hexo-migration --no-ff -m "Merge branch 'feature/hexo-migration' — migrate from Jekyll to Hexo"
+```
+
+- [ ] **Step 2: Push to origin**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+git push origin gh-pages
+```
+
+Expected: Push succeeds. Workflow `Deploy Hexo site to Pages` triggers on `gh-pages`.
+
+- [ ] **Step 3: Watch the GitHub Actions run**
+
+```bash
+gh run watch
+```
+
+(Or open https://github.com/twofiveoneten/twofiveoneten.github.io/actions in a browser.)
+
+Expected: build job completes, deploy job completes, page URL is reported.
+
+- [ ] **Step 4: Verify the live site**
+
+Open `https://note.zkk.me/` in a browser and verify:
+- [ ] Homepage renders with banner image
+- [ ] Click into at least one post — image references load
+- [ ] Local search works (try a query in the search box)
+- [ ] About and Categories pages render
+- [ ] Custom domain (`note.zkk.me`) is correctly served
+
+- [ ] **Step 5: Cleanup work branch**
+
+```bash
+cd /Users/zhangkangkang/project/twofiveoneten.github.io
+git branch -d feature/hexo-migration
+git push origin --delete feature/hexo-migration
+```
+
+---
+
+## Verification Checklist (from spec)
+
+After Task 10, confirm:
+
+- [ ] `npx hexo generate` produces 71 post HTML files
+- [ ] Spot-checked 5 posts have unchanged permalinks (`/0x0000.html`, `/0x0045.html`, etc.)
+- [ ] Spot-checked post images load via `/img/...` URLs
+- [ ] Homepage banner (`/img/global/bg.png`) displays
+- [ ] About and Categories pages accessible
+- [ ] 404 page triggers on missing URL
+- [ ] Local search box returns results
+- [ ] `note.zkk.me` custom domain serves correctly
+- [ ] GitHub Actions deploy succeeded
