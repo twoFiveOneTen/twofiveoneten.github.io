@@ -40,3 +40,7 @@ color:
 footer:
   statistics:
     enable: false
+
+# Navbar — override the default 'Fluid' blog title with our site title
+navbar:
+  blog_title: "zkk's blog"
