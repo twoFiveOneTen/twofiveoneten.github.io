@@ -1,7 +1,6 @@
 ---
 layout: categories
 title: Categories
-permalink: /categories.html/
 heading: "文章分类"
 subheading: "按分类浏览所有文章"
 banner:
