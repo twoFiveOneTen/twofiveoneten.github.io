@@ -11,3 +11,6 @@ _site/
 .jekyll-cache/
 .jekyll-metadata
 vendor/
+
+# Hexo local database cache
+db.json
