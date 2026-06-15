@@ -2,6 +2,10 @@
 # Schema: see node_modules/hexo-theme-fluid/_config.yml after npm install
 # Doc: https://github.com/fluid-dev/hexo-theme-fluid
 
+# Browser and touch icon
+favicon: /favicon.ico
+apple_touch_icon: /favicon.ico
+
 # Home page banner (uses index.* keys, NOT banner.home.*)
 index:
   banner_img: /img/global/bg.png
