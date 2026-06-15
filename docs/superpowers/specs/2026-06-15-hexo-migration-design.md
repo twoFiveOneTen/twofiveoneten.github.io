@@ -102,7 +102,7 @@ search:
   "dependencies": {
     "hexo": "^7.3.0",
     "hexo-theme-fluid": "^1.9.4",
-    "hexo-generator-search": "^0.2.1",
+    "hexo-generator-search": "^2.4.3",
     "hexo-generator-feed": "^3.0.0",
     "hexo-renderer-marked": "^6.0.0"
   }
