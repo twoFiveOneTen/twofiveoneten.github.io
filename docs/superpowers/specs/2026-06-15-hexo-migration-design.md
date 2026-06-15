@@ -65,7 +65,6 @@ language: zh-CN
 timezone: Asia/Shanghai
 url: https://note.zkk.me
 root: /
-permalink_defaults:
 permalink: :year/:month/:day/:title/
 theme: fluid
 ```
