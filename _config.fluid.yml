@@ -32,9 +32,11 @@ post:
     min2read:
       enable: true
 
-# Custom primary color (carried over from Jekyll yat theme banner background)
+# Custom colors (navbar bg carried over from Jekyll yat theme banner background)
 color:
-  main_color: '#1a1a2e'
+  navbar_bg_color: '#1a1a2e'
 
+# Disable footer statistics counter (was inherited from Jekyll; Fluid has no top-level enable)
 footer:
-  enable: true
+  statistics:
+    enable: false
