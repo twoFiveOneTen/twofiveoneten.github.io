@@ -44,3 +44,13 @@ footer:
 # Navbar — override the default 'Fluid' blog title with our site title
 navbar:
   blog_title: "zkk's blog"
+
+# About page (overrides Fluid's "Fluid" / "An elegant theme for Hexo" defaults)
+about:
+  enable: true
+  avatar: /img/avatar.ico
+  name: "zkk"
+  intro: "分享点滴学习，记录成长足迹"
+  icons:
+    - { class: "iconfont icon-github-fill", link: "https://github.com/twofiveoneten", tip: "GitHub" }
+    - { class: "iconfont icon-mail-fill", link: "mailto:zhang.kangkang@outlook.com", tip: "邮箱" }
