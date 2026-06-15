@@ -94,20 +94,30 @@ search:
 
 ```json
 {
+  "hexo": { "version": "6.3.0" },
   "scripts": {
     "build": "hexo generate",
     "serve": "hexo serve",
     "clean": "hexo clean"
   },
   "dependencies": {
-    "hexo": "^7.3.0",
-    "hexo-theme-fluid": "^1.9.4",
+    "hexo": "^6.3.0",
+    "hexo-theme-fluid": "1.8.14",
+    "hexo-renderer-ejs": "^2.0.0",
+    "hexo-renderer-stylus": "^2.1.0",
+    "hexo-renderer-marked": "^6.0.0",
     "hexo-generator-search": "^2.4.3",
     "hexo-generator-feed": "^3.0.0",
-    "hexo-renderer-marked": "^6.0.0"
+    "hexo-generator-index": "^2.0.0",
+    "hexo-generator-archive": "^2.0.0",
+    "hexo-generator-category": "^2.0.0",
+    "hexo-generator-tag": "^2.0.0",
+    "hexo-pagination": "^2.0.0"
   }
 }
 ```
+
+> **实际选择的版本**：Hexo 6.3.0 + Fluid 1.8.14。Fluid 1.9.x 依赖 Hexo 7 已移除的 `locals.index_posts` 和默认 `index_generator` 配置，与其打补丁不如降级到 Hexo 6 + Fluid 1.8.14（最后一款开箱即用支持 Hexo 6 的 Fluid 版本）。Hexo 6 还需要 `hexo-renderer-ejs`、`hexo-renderer-stylus`（Hexo 7 不再自动加载），以及四个 `hexo-generator-*`（Hexo 6 不内建）和 `hexo-pagination`（这些 generator 的 peer dep）。
 
 ## 部署工作流
 
