@@ -1,76 +1,54 @@
-# Welcome to Jekyll!
-#
-# This config file is meant for settings that affect your whole blog, values
-# which you are expected to set up once and rarely edit after that. If you find
-# yourself editing this file very often, consider using Jekyll's data files
-# feature for the data you need to update frequently.
-#
-# For technical reasons, this file is *NOT* reloaded automatically when you use
-# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
-#
-# If you need help with YAML syntax, here are some quick references for you:
-# https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
-# https://learnxinyminutes.com/docs/yaml/
-#
-# Site settings
-# These are used to personalize your new site. If you look in the HTML files,
-# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
-# You can create any custom variable you would like, and they will be accessible
-# in the templates via {{ site.myvariable }}.
-
-title: zkk's blog
-email: zhang.kangkang@outlook.com
-description: >- # this means to ignore newlines until "baseurl:"
-  我的个人在线笔记本
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://twofiveoneten.github.io" # the base hostname & protocol for your site, e.g. http://example.com
-github_username:  twofiveoneten
-
+# Site
+title: "zkk's blog"
+subtitle: '分享点滴学习，记录成长足迹'
+description: '我的个人在线笔记本'
+author: zkk
+language: zh-CN
 timezone: Asia/Shanghai
 
-# 导航页面配置
-header_pages:
-  - about.markdown
-  - categories.html
+# URL
+url: https://note.zkk.me
+root: /
+permalink: :year/:month/:day/:title/
+permalink_defaults:
 
-# YAT Theme 配置
-yat:
-  date_format: "%Y年%m月%d日"
+# Directory
+source_dir: source
+public_dir: public
+tag_dir: tags
+archive_dir: archives
+category_dir: categories
 
-# 首页 Banner 配置
-banner:
-  image: "/img/global/bg.png"
-  opacity: 0.8
-  background: "#1a1a2e"
-  height: "50vh"
-  min_height: "50vh"
-  heading_style: "font-size: 2.5em; font-weight: bold; color: #ffffff; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);"
-  subheading_style: "color: #ffd700; font-size: 1.5em; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);"
+# Writing
+new_post_name: :title.md
+default_layout: post
+titlecase: false
+external_link:
+  enable: true
+  field: site
+  nofollow: true
 
-# Build settings
-markdown: kramdown
-kramdown:
-  input: GFM
-theme: jekyll-theme-yat
-plugins:
-  - jekyll-feed
+# Markdown
+marked:
+  gfm: true
+  breaks: false
 
-# Exclude from processing.
-# The following items will not be processed, by default.
-# Any item listed under the `exclude:` key here will be automatically added to
-# the internal "default list".
-#
-# Excluded items can be processed by explicitly listing the directories or
-# their entries' file path in the `include:` list.
-#
-# exclude:
-#   - .sass-cache/
-#   - .jekyll-cache/
-#   - gemfiles/
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules/
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
+# Theme
+theme: fluid
+
+# Feed (replaces jekyll-feed)
+feed:
+  type: atom
+  path: atom.xml
+  limit: 20
+
+# Search (powers Fluid local search)
+search:
+  path: local-search.xml
+  field: post
+  format: html
+  limit: 10000
+
+# Deployment (informational; actual deploy via GitHub Actions)
+deploy:
+  type: ''
