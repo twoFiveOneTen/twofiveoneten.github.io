@@ -10,7 +10,6 @@ timezone: Asia/Shanghai
 url: https://note.zkk.me
 root: /
 permalink: :year/:month/:day/:title/
-permalink_defaults:
 
 # Directory
 source_dir: source
@@ -25,7 +24,6 @@ default_layout: post
 titlecase: false
 external_link:
   enable: true
-  field: site
   nofollow: true
 
 # Markdown
@@ -42,12 +40,11 @@ feed:
   path: atom.xml
   limit: 20
 
-# Search (powers Fluid local search)
+# Search (powers Fluid local search — valid keys: path, field, content, template)
 search:
   path: local-search.xml
   field: post
-  format: html
-  limit: 10000
+  content: true
 
 # Deployment (informational; actual deploy via GitHub Actions)
 deploy:
