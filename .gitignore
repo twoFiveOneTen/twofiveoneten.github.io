@@ -1,5 +1,13 @@
-_site
-.sass-cache
-.jekyll-cache
+# Dependencies
+node_modules/
+
+# Hexo generated site
+public/
+.DS_Store
+
+# Jekyll residue (kept for safety in case any weren't removed)
+_site/
+.sass-cache/
+.jekyll-cache/
 .jekyll-metadata
-vendor
+vendor/
