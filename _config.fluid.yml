@@ -10,7 +10,7 @@ apple_touch_icon: /favicon.ico
 index:
   # 留空会被 url_for() 解析成站点根路径 '/'，导致浏览器把首页 HTML 当图片再请求一次；
   # 用一个空的 data URI 既不发起额外请求，也不会渲染出图片，只剩下纯色遮罩块
-  banner_img: 'data:,'
+  banner_img: '/img/default.png'
   banner_img_height: 50
   banner_mask_alpha: 0.3
   slogan:
