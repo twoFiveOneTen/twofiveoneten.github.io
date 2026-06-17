@@ -11,7 +11,7 @@ index:
   # 留空会被 url_for() 解析成站点根路径 '/'，导致浏览器把首页 HTML 当图片再请求一次；
   # 用一个空的 data URI 既不发起额外请求，也不会渲染出图片，只剩下纯色遮罩块
   banner_img: '/img/default.png'
-  banner_img_height: 42
+  banner_img_height: 50
   banner_mask_alpha: 0.3
   slogan:
     enable: true
@@ -60,3 +60,7 @@ about:
   icons:
     - { class: "iconfont icon-github-fill", link: "https://github.com/twofiveoneten", tip: "GitHub" }
     - { class: "iconfont icon-mail-fill", link: "mailto:zhang.kangkang@outlook.com", tip: "邮箱" }
+
+# Load custom styles from source/css/custom.css
+custom_css:
+  - /css/custom.css
